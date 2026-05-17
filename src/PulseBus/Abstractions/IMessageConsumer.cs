@@ -1,4 +1,7 @@
-﻿namespace PulseBus.Core.Abstractions;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace PulseBus.Abstractions;
 
 public interface IMessageConsumer
 {

@@ -1,4 +1,4 @@
-﻿namespace PulseBus.Core.Models;
+﻿namespace PulseBus.Models;
 
 public class MessageEnvelope
 {

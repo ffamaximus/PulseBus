@@ -1,6 +1,7 @@
-﻿using PulseBus.Core.Models;
+﻿using System.Threading.Tasks;
+using PulseBus.Models;
 
-namespace PulseBus.Core.Abstractions;
+namespace PulseBus.Abstractions;
 
 public interface IMessageContext
 {

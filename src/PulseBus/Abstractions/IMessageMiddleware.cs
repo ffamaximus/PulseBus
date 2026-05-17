@@ -1,6 +1,7 @@
-﻿using PulseBus.Core.Pipeline;
+﻿using System.Threading.Tasks;
+using PulseBus.Pipeline;
 
-namespace PulseBus.Core.Abstractions;
+namespace PulseBus.Abstractions;
 
 public interface IMessageMiddleware
 {

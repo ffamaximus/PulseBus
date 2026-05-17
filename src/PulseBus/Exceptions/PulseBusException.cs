@@ -1,4 +1,6 @@
-﻿namespace PulseBus.Core.Exceptions;
+﻿using System;
+
+namespace PulseBus.Exceptions;
 
 public class PulseBusException : Exception
 {

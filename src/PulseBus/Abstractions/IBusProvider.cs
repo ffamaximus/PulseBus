@@ -1,6 +1,8 @@
-﻿using PulseBus.Core.Models;
+﻿using System;
+using System.Threading.Tasks;
+using PulseBus.Models;
 
-namespace PulseBus.Core.Abstractions;
+namespace PulseBus.Abstractions;
 
 public interface IBusProvider
 {

@@ -1,7 +1,8 @@
-﻿using PulseBus.Core.Abstractions;
-using PulseBus.Core.Models;
+﻿using System;
+using PulseBus.Abstractions;
+using PulseBus.Models;
 
-namespace PulseBus.Core.Pipeline;
+namespace PulseBus.Pipeline;
 
 public class MiddlewareContext
 {

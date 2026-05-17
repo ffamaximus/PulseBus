@@ -1,4 +1,4 @@
-﻿namespace PulseBus.Core.Abstractions;
+﻿namespace PulseBus.Abstractions;
 
 public interface IMessageSerializer
 {

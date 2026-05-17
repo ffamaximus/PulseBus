@@ -1,4 +1,6 @@
-﻿namespace PulseBus.Core.Abstractions;
+﻿using System.Threading.Tasks;
+
+namespace PulseBus.Abstractions;
 
 public interface IIdempotencyStore
 {

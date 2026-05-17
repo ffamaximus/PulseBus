@@ -1,6 +1,7 @@
-﻿using PulseBus.Core.Abstractions;
+﻿using System.Collections.Generic;
+using PulseBus.Abstractions;
 
-namespace PulseBus.Core.Models;
+namespace PulseBus.Models;
 
 public class BusOptions
 {

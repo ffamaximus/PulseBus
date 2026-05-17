@@ -1,4 +1,6 @@
-﻿namespace PulseBus.Core.Models;
+﻿using System;
+
+namespace PulseBus.Models;
 
 public class RetryContext
 {
