@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PulseBus</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Andrés</Authors>
+    <Company>PulseBus</Company>
+    <Description>PulseBus is a minimalistic, extensible, provider-agnostic messaging abstraction for .NET. Designed for RabbitMQ, Azure Queue, AWS SQS, Kafka and more.</Description>
+    <PackageTags>messaging;bus;queue;event-driven;microservices;rabbitmq;sqs;kafka;azure</PackageTags>
+    <RepositoryUrl>https://github.com/TU-USUARIO/PulseBus</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
