@@ -1,6 +1,5 @@
-﻿<p align="center">
-  <img src="Banner.PNG" alt="PulseBus Banner" width="100%">
-</p>
+﻿![PulseBus Banner](https://github.com/ffamaximus/PulseBus/blob/main/Banner.PNG?raw=true)
+
 
 # 🚌 PulseBus
 
@@ -136,6 +135,4 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
-<p align="center">
-  Made with ❤️ for the .NET community
-</p>
+Made with ❤️ for the .NET community

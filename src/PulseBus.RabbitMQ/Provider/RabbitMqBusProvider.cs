@@ -1,4 +1,8 @@
-﻿using PulseBus.RabbitMQ.Connection;
+﻿using System;
+using System.Threading.Tasks;
+using PulseBus.Abstractions;
+using PulseBus.Models;
+using PulseBus.RabbitMQ.Connection;
 using PulseBus.RabbitMQ.Consumer;
 using PulseBus.RabbitMQ.Producer;
 

@@ -1,39 +1,35 @@
-﻿using PulseBus.RabbitMQ.Connection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using PulseBus.Abstractions;
+using PulseBus.Models;
+using PulseBus.Pipeline;
+using PulseBus.RabbitMQ.Connection;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace PulseBus.RabbitMQ.Consumer;
 
-public class RabbitMqConsumer : IMessageConsumer
+public class RabbitMqConsumer(
+    RabbitMqConnection connection,
+    string topic,
+    Func<MessageEnvelope, IMessageContext, Task> handler,
+    BusOptions options)
+    : IMessageConsumer
 {
-    private readonly RabbitMqConnection _connection;
-    private readonly string _topic;
-    private readonly Func<MessageEnvelope, IMessageContext, Task> _handler;
-    private readonly BusOptions _options;
-    private IModel _channel;
+    private IChannel _channel;
 
-    public RabbitMqConsumer(
-        RabbitMqConnection connection,
-        string topic,
-        Func<MessageEnvelope, IMessageContext, Task> handler,
-        BusOptions options)
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        _connection = connection;
-        _topic = topic;
-        _handler = handler;
-        _options = options;
-    }
-
-    public Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        _channel = _connection.CreateChannel();
-        _channel.QueueDeclare(_topic, durable: true, exclusive: false, autoDelete: false);
+        _channel = await connection.CreateChannelAsync();
+        await _channel.QueueDeclareAsync(topic, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received += OnMessageReceived;
+        consumer.ReceivedAsync += OnMessageReceived;
 
-        _channel.BasicConsume(_topic, autoAck: false, consumer);
-
-        return Task.CompletedTask;
+        await _channel.BasicConsumeAsync(topic, autoAck: false, consumer, cancellationToken);
     }
 
     private async Task OnMessageReceived(object sender, BasicDeliverEventArgs args)
@@ -42,14 +38,13 @@ public class RabbitMqConsumer : IMessageConsumer
         {
             MessageId = args.BasicProperties.MessageId,
             CorrelationId = args.BasicProperties.CorrelationId,
-            Topic = _topic,
+            Topic = topic,
             Payload = args.Body.ToArray(),
-            Headers = new MessageHeaders(
-                args.BasicProperties.Headers?.ToDictionary(
+            Headers = (MessageHeaders)( args.BasicProperties.Headers?.ToDictionary(
                     h => h.Key,
                     h => h.Value.ToString()
-                ) ?? new Dictionary<string, string>()
-            )
+                ) ?? new Dictionary<string, string>())
+            
         };
 
         var context = new RabbitMqMessageContext(_channel, args);
@@ -63,11 +58,11 @@ public class RabbitMqConsumer : IMessageConsumer
 
         MiddlewareDelegate next = async (ctx) =>
         {
-            var message = _options.Serializer.Deserialize<object>(ctx.Envelope.Payload);
-            await _handler(message, ctx.MessageContext);
+            var message = options.Serializer.Deserialize<MessageEnvelope>(ctx.Envelope.Payload);
+            await handler(message, ctx.MessageContext);
         };
 
-        foreach (var middleware in _options.Middlewares.Reverse())
+        foreach (var middleware in options.Middlewares.Reverse())
         {
             var current = next;
             next = (ctx) => middleware.InvokeAsync(ctx, current);
@@ -78,7 +73,7 @@ public class RabbitMqConsumer : IMessageConsumer
 
     public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        _channel?.Close();
+        _channel.CloseAsync(cancellationToken);
         return Task.CompletedTask;
     }
 }

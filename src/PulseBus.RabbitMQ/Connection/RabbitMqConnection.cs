@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using System.Threading.Tasks;
+using RabbitMQ.Client;
 
 namespace PulseBus.RabbitMQ.Connection;
 
@@ -6,7 +7,7 @@ public class RabbitMqConnection
 {
     private readonly RabbitMqConnectionOptions _options;
     private IConnection _connection;
-    private readonly Lock _lock = new();
+    private readonly object _lock = new();
 
     public RabbitMqConnection(RabbitMqConnectionOptions options)
     {
@@ -26,7 +27,7 @@ public class RabbitMqConnection
 
         lock (_lock)
         {
-            if (_connection.IsOpen)
+            if (_connection != null && _connection.IsOpen)
                 return;
 
             var factory = new ConnectionFactory

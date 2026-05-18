@@ -1,13 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PulseBus.RabbitMQ</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Andrés</Authors>
+    <Company>PulseBus</Company>
+    <Description>RabbitMQ provider for PulseBus, the minimalistic and extensible messaging abstraction for .NET.</Description>
+    <PackageTags>pulsebus;rabbitmq;messaging;queue;event-driven;microservices</PackageTags>
+    <RepositoryUrl>https://github.com/ffamaximus/PulseBus/tree/main/src/PulseBus.RabbitMQ</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="PulseBus" Version="1.0.2" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\README.md" Pack="true" PackagePath="" />
+    <None Include="..\..\Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
