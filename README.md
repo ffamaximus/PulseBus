@@ -1,4 +1,4 @@
-﻿![PulseBus Banner](https://github.com/ffamaximus/PulseBus/blob/main/Banner.PNG?raw=true)
+﻿![PulseBus Banner](https://raw.githubusercontent.com/ffamaximus/PulseBus/refs/heads/main/Banner.PNG)
 
 
 # 🚌 PulseBus
@@ -69,13 +69,13 @@ services.AddPulseBus(builder =>
     // Configure your provider
     builder.UseRabbitMq(options =>
     {
-        options.Host = "localhost";
-        options.Username = "guest";
-        options.Password = "guest";
+        config.Host = "localhost";
+        config.Port = 5672;
+        config.Username = "guest";
+        config.Password = "guest";
+        config.UseTls = false;
     });
 
-    // Select your preferred serializer
-    builder.UseJsonSerializer();
 });
 ```
 
@@ -87,7 +87,16 @@ services.AddPulseBus(builder =>
 Send messages asynchronously to any configured bus:
 
 ```csharp
-await bus.PublishAsync("user.requested", new UserRequested
+// Previously in constructor
+
+private readonly IMessageBus _messageBus;
+
+public UserService(IMessageBus messageBus)
+{
+    _messageBus = messageBus;
+}
+
+await _messageBus.PublishAsync("user.requested", new UserRequested
 {
     Email = "andres@example.com",
     Name = "Andrés"
@@ -98,14 +107,40 @@ await bus.PublishAsync("user.requested", new UserRequested
 Define message handlers easily:
 
 ```csharp
-bus.Subscribe<UserRequested>("user.requested", async (msg, ctx) =>
+[Queue("user.requested")]
+[Retry(3, 5)]
+[Prefetch(16)]
+public class OrderCreatedListener
 {
-    Console.WriteLine($"Processing: {msg.Email}");
-    
-    // Acknowledge the message
-    await ctx.AcknowledgeAsync();
-});
+    public Task HandleAsync(UserRequested message, IMessageContext context)
+    {
+        Console.WriteLine($"Processing {message.Email}");
+        return Task.CompletedTask;
+    }
+}
 ```
+
+---
+## 🔧 Middlewares
+You can agree middlewares:
+
+```csharp
+bus.UseMiddleware(new LoggingMiddleware());
+bus.UseMiddleware(new RetryMiddleware());
+```
+
+Implementation
+```csharp
+public class LoggingMiddleware : IMessageMiddleware
+{
+    public async Task InvokeAsync(MiddlewareContext context, MiddlewareDelegate next)
+    {
+        Console.WriteLine($"Processing ... {context.Envelope.MessageId}");
+        await next(context);
+    }
+}
+```
+
 
 ---
 

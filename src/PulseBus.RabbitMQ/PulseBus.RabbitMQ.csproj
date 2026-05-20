@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PulseBus.RabbitMQ</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Andrés</Authors>
     <Company>PulseBus</Company>
     <Description>RabbitMQ provider for PulseBus, the minimalistic and extensible messaging abstraction for .NET.</Description>
@@ -16,13 +16,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PulseBus" Version="1.0.2" />
+    <PackageReference Include="PulseBus" Version="1.1.0" />
+    <PackageReference Include="PulseBus.Extensions" Version="1.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include=".\README.md" Pack="true" PackagePath="" />
     <None Include="..\..\Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PulseBus\PulseBus.csproj" />
   </ItemGroup>
 
 </Project>

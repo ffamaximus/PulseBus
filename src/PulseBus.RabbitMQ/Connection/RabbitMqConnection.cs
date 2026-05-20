@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+using System.Net.Security;
+using System.Threading.Tasks;
 using RabbitMQ.Client;
 
 namespace PulseBus.RabbitMQ.Connection;
@@ -6,38 +8,36 @@ namespace PulseBus.RabbitMQ.Connection;
 public class RabbitMqConnection
 {
     private readonly RabbitMqConnectionOptions _options;
-    private IConnection _connection;
-    private readonly object _lock = new();
+    private IConnection? _connection;
 
     public RabbitMqConnection(RabbitMqConnectionOptions options)
     {
         _options = options;
     }
 
-    public async Task<IChannel> CreateChannelAsync()
+    public async Task<IConnection> GetConnectionAsync()
     {
-        EnsureConnection();
-        return await _connection.CreateChannelAsync();
-    }
+        if (_connection is { IsOpen: true })
+            return _connection;
 
-    private void EnsureConnection()
-    {
-        if (_connection.IsOpen)
-            return;
-
-        lock (_lock)
+        var factory = new ConnectionFactory
         {
-            if (_connection != null && _connection.IsOpen)
-                return;
+            HostName = _options.Host,
+            Port = _options.Port,
+            UserName = _options.Username,
+            Password = _options.Password
+            
+        };
 
-            var factory = new ConnectionFactory
-            {
-                HostName = _options.Host,
-                UserName = _options.Username,
-                Password = _options.Password
-            };
-
-            _connection = factory.CreateConnectionAsync().Result;
+        if (_options.UseTls)
+        {
+            factory.Ssl.Enabled = true;
+            factory.Ssl.ServerName = _options.Host;
+            factory.Ssl.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateNameMismatch |
+                                                 SslPolicyErrors.RemoteCertificateChainErrors;
         }
+
+        _connection = await factory.CreateConnectionAsync();
+        return _connection;
     }
 }

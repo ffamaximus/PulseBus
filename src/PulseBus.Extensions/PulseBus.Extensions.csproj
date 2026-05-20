@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <PackageId>PulseBus.Extensions</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>Andrés</Authors>
+    <Company>PulseBus</Company>
+
+    <Description>Extensions pack for PulseBus: JSON serialization, retry policies, logging middleware, idempotency store and more.</Description>
+    <PackageTags>pulsebus;messaging;middleware;retry;logging;serialization</PackageTags>
+
+    <RepositoryUrl>https://github.com/ffamaximus/PulseBus.Extensions</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.PNG</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+<!--    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />-->
+<!--    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />-->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+    <PackageReference Include="PulseBus" Version="1.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\Icon.PNG" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
 ﻿# PulseBus.RabbitMQ
 
-![PulseBus.RabbitMQ Banner](https://raw.githubusercontent.com/ffamaximus/PulseBus.RabbitMQ/main/BANNER.png)
+![PulseBus.RabbitMQ Banner](https://raw.githubusercontent.com/ffamaximus/PulseBus/refs/heads/main/Banner.PNG)
 
 A RabbitMQ provider for PulseBus, the minimalistic, extensible, and provider-agnostic messaging abstraction for .NET.
 

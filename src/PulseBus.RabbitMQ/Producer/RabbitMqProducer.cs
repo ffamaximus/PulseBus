@@ -15,13 +15,15 @@ public class RabbitMqProducer(RabbitMqConnection connection, IMessageSerializer 
 
     public async Task ProduceAsync(MessageEnvelope envelope, CancellationToken cancellationToken = default)
     {
-        await using var channel = await connection.CreateChannelAsync();
+        var conn = await connection.GetConnectionAsync();
+        await using var channel = await conn.CreateChannelAsync(cancellationToken: cancellationToken);
 
         var props = new BasicProperties
         {
             MessageId = envelope.MessageId,
             CorrelationId = envelope.CorrelationId,
-            Headers = envelope.Headers.ToDictionary(h => h.Key, h => (object)h.Value)!
+            Headers = envelope.Headers.ToDictionary(h => h.Key, h => (object)h.Value)!,
+            DeliveryMode = DeliveryModes.Persistent
         };
 
         await channel.BasicPublishAsync(
