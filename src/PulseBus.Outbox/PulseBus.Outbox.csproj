@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <!-- NuGet -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PulseBus.Outbox</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Andrés</Authors>
+    <Company>PulseBus</Company>
+    <Description>Transactional Outbox implementation for PulseBus. Guarantees consistency between database state and event publication. Includes EF Core store, background processor, middleware, and serializer.</Description>
+    <PackageTags>outbox;messaging;event-driven;distributed-systems;pulsebus;ddd;architecture</PackageTags>
+    <RepositoryUrl>https://github.com/YOUR_REPO/pulsebus-outbox</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ffamaximus/PulseBus/tree/main/src/PulseBus.Outbox</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!-- Docs -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>1591</NoWarn>
+
+    <!-- Quality -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.16" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.16" />
+    <PackageReference Include="PulseBus" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\Icon.PNG" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

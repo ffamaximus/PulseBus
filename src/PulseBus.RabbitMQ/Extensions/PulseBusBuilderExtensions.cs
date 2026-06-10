@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using PulseBus.Abstractions;
 using PulseBus.Attributes;
 using PulseBus.Builders;
+using PulseBus.Extensions.Middlewares;
 using PulseBus.Models;
 using PulseBus.RabbitMQ.Connection;
 using PulseBus.RabbitMQ.Consumer;
@@ -21,19 +23,25 @@ public static class PulseBusRabbitMqExtensions
         var options = new RabbitMqConnectionOptions();
         configure(options);
 
-        var connection = new RabbitMqConnection(options);
+        // var connection = new RabbitMqConnection(options);
+        // 🔥 Registrar la conexión en DI
+        builder.Services.AddSingleton(options);
+        builder.Services.AddSingleton<RabbitMqConnection>();
 
-        builder.Options.Provider = new RabbitMqBusProvider(connection, builder.Options);
-
+        builder.Options.Provider =
+            new RabbitMqBusProvider(builder.Services.BuildServiceProvider().GetRequiredService<RabbitMqConnection>(),
+                builder.Options);
+        
+        builder.Services.AddSingleton<IBusProvider, RabbitMqBusProvider>();
         return builder;
     }
-    
-    public static async Task SubscribeListenerAsync<TListener, TMessage>(
+
+    public static Task SubscribeListenerAsync<TListener, TMessage>(
+        this IMessageBus bus,
         IServiceProvider services)
         where TListener : class
     {
         var listener = services.GetRequiredService<TListener>();
-        var bus = services.GetRequiredService<IMessageBus>();
         var connection = services.GetRequiredService<RabbitMqConnection>();
         var options = services.GetRequiredService<BusOptions>();
         var type = typeof(TListener);
@@ -46,6 +54,17 @@ public static class PulseBusRabbitMqExtensions
 
         var queueName = queueAttr?.Name ?? typeof(TMessage).Name;
         
+        // Middlewares locales por consumer
+        var middlewares = options.Middlewares.ToList();
+
+        if (retryAttr != null)
+        {
+            middlewares.Add(new AttributeRetryMiddleware(
+                retryAttr.Attempts,
+                retryAttr.DelaySeconds
+            ));
+        }
+
         var consumer = new RabbitMqConsumer(
             connection: connection,
             topic: queueName,
@@ -54,18 +73,11 @@ public static class PulseBusRabbitMqExtensions
                 var message = options.Serializer.Deserialize<TMessage>(envelope.Payload);
                 await ((dynamic)listener).HandleAsync((dynamic)message, ctx);
             },
-            options: options,
-            retryAttr: retryAttr,
+            options with { Middlewares = middlewares }, // middlewares locales,
             prefetchAttr: prefetchAttr,
             deadLetterAttr: deadLetterAttr
         );
 
-        await consumer.StartAsync();
-        // return bus.SubscribeAsync<TMessage>(
-        //     queueName,
-        //     async (msg, ctx) =>
-        //     {
-        //         await ((dynamic)listener).HandleAsync((dynamic)msg, ctx);
-        //     });
+        return consumer.StartAsync();
     }
 }

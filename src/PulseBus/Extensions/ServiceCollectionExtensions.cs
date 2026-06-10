@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using PulseBus.Abstractions;
 using PulseBus.Builders;
+using PulseBus.Models;
 
 namespace PulseBus.Extensions;
 
@@ -14,10 +15,12 @@ public static class ServiceCollectionExtensions
     {
         var builder = new PulseBusBuilder(services);
         configure(builder);
+        
+        services.AddSingleton(builder.Options);
 
         services.AddSingleton<IMessageBus>(sp =>
         {
-            var options = builder.Options;
+            var options = sp.GetRequiredService<BusOptions>();
             return new DefaultMessageBus(options);
         });
 

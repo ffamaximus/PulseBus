@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using PulseBus.Models;
@@ -32,5 +33,21 @@ public class DefaultMessageBus(BusOptions options) : IMessageBus
         });
 
         return consumer.StartAsync();
+    }
+    
+    public Task SendAsync(object command, CancellationToken ct = default)
+    {
+        var type = command.GetType().Name;
+        var envelope = new MessageEnvelope
+        {
+            MessageId = Guid.NewGuid().ToString(),
+            CorrelationId = Guid.NewGuid().ToString(),
+            Topic = type,
+            Payload = JsonSerializer.SerializeToUtf8Bytes(command),
+            Headers = new MessageHeaders()
+        };
+
+        var producer = options.Provider.CreateProducer();
+        return producer.ProduceAsync(envelope, ct);
     }
 }

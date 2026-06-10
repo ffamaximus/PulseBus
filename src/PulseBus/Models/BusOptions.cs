@@ -3,7 +3,7 @@ using PulseBus.Abstractions;
 
 namespace PulseBus.Models;
 
-public class BusOptions
+public record BusOptions
 {
     public IBusProvider Provider { get; set; }
     public IMessageSerializer Serializer { get; set; }

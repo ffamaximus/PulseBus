@@ -1,12 +1,10 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PulseBus.Abstractions;
 using PulseBus.Attributes;
-using PulseBus.Extensions.Middlewares;
 using PulseBus.Models;
 using PulseBus.Pipeline;
 using PulseBus.RabbitMQ.Connection;
@@ -20,12 +18,11 @@ public class RabbitMqConsumer(
     string topic,
     Func<MessageEnvelope, IMessageContext, Task> handler,
     BusOptions options,
-    RetryAttribute? retryAttr = null,
-    PrefetchAttribute? prefetchAttr = null,
-    DeadLetterAttribute? deadLetterAttr = null)
+    PrefetchAttribute prefetchAttr = null,
+    DeadLetterAttribute deadLetterAttr = null)
     : IMessageConsumer
 {
-    private IChannel? _channel;
+    private IChannel _channel;
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
@@ -38,19 +35,16 @@ public class RabbitMqConsumer(
         {
             args["x-dead-letter-exchange"] = "";
             args["x-dead-letter-routing-key"] = deadLetterAttr.QueueName;
-        }
-        
-        if (retryAttr != null)
-        {
-            options.Middlewares.Add(
-                new AttributeRetryMiddleware(
-                    retryAttr.Attempts,
-                    retryAttr.DelaySeconds
-                )
+            await _channel.QueueDeclareAsync(
+                queue: deadLetterAttr.QueueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null,
+                cancellationToken: cancellationToken
             );
         }
-
-
+        
         await _channel.QueueDeclareAsync(
             queue: topic,
             durable: true,
@@ -119,7 +113,7 @@ public class RabbitMqConsumer(
         }
         catch (Exception)
         {
-            await _channel.BasicNackAsync(args.DeliveryTag, false, true);
+            await _channel.BasicNackAsync(args.DeliveryTag, false, false);
         }
     }
 

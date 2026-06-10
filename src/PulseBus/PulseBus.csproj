@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PulseBus</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>Andrés Mariño</Authors>
     <Company>PulseBus</Company>
     <Description>PulseBus is a minimalistic, extensible, provider-agnostic messaging abstraction for .NET. Designed for RabbitMQ, Azure Queue, AWS SQS, Kafka and more.</Description>
